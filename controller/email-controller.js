@@ -1,10 +1,11 @@
 import Email from "../model/email.js"
 
 
-export const saveSentEmails=(request, response)=>{
+export const saveSentEmails=async (request, response)=>{
     try{
-       const email =  new Email(request.body)
-       email.save()
+        const userId = request.user._id;
+       const email =  new Email({ ...request.body, user: userId })
+       await email.save()
        response.status(200).json('email saved successfully');
     }catch(error){
         response.status(500).json(error.message)
@@ -13,17 +14,19 @@ export const saveSentEmails=(request, response)=>{
 
 export const getEmails = async(request,response)=>{
     try{
+
+        const userId = request.user._id;
         let emails;
 
         if(request.params.type === 'bin'){
-            emails = await Email.find({bin:true})
+            emails = await Email.find({bin:true, user: userId })
         }else if(request.params.type === 'allmail'){
-            emails = await Email.find({})
+            emails = await Email.find({ user: userId })
         }else if (request.params.type === 'starred'){
-            emails = await Email.find({starred:true,bin:false})
+            emails = await Email.find({starred:true,bin:false, user: userId})
         }
         else{  
-        emails = await Email.find({type:request.params.type})
+        emails = await Email.find({type:request.params.type, user: userId})
         }
         return response.status(200).json(emails);
     }catch(error){
