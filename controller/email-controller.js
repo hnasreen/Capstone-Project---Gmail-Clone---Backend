@@ -1,11 +1,10 @@
 import Email from "../model/email.js"
 
 
-export const saveSentEmails=async (request, response)=>{
+export const saveSentEmails=(request, response)=>{
     try{
-        const userId = request.user._id;
-       const email =  new Email({ ...request.body, user: userId })
-       await email.save()
+       const email =  new Email(request.body)
+       email.save()
        response.status(200).json('email saved successfully');
     }catch(error){
         response.status(500).json(error.message)
@@ -14,24 +13,40 @@ export const saveSentEmails=async (request, response)=>{
 
 export const getEmails = async(request,response)=>{
     try{
-
-        const userId = request.user._id;
         let emails;
 
         if(request.params.type === 'bin'){
-            emails = await Email.find({bin:true, user: userId })
+            emails = await Email.find({bin:true})
         }else if(request.params.type === 'allmail'){
-            emails = await Email.find({ user: userId })
+            emails = await Email.find({})
         }else if (request.params.type === 'starred'){
-            emails = await Email.find({starred:true,bin:false, user: userId})
+            emails = await Email.find({starred:true,bin:false})
+        }else if (request.params.type === 'sent'){
+            emails = await Email.find({ type: 'sent' });
+        }else if(request.params.type === 'inbox'){
+            emails = await Email.find({ type: 'sent' }); //Changed the type to sent to show the sent emails in the inbox.
+            await markEmailsAsRead(emails);
         }
         else{  
-        emails = await Email.find({type:request.params.type, user: userId})
+        emails = await Email.find({type:request.params.type})
         }
         return response.status(200).json(emails);
     }catch(error){
         console.log(error);
         response.status(500).json(error.message)
+    }
+}
+
+async function markEmailsAsRead(emails) {
+    try {
+        await Promise.all(emails.map(async (email) => {
+            if (!email.read) {
+                email.read = true;
+                await email.save();
+            }
+        }));
+    } catch (error) {
+        console.error('Error marking emails as read:', error);
     }
 }
 

@@ -34,11 +34,15 @@ const EmailSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'users',
-        required: true
-    }
+    read: { 
+        type: Boolean, 
+        default: false
+    } ,
+    // user: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'users',
+    //     required: true
+    // }
 })
 
 const email = mongoose.model('emails',EmailSchema)

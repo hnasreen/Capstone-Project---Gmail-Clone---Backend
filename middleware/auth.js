@@ -1,66 +1,56 @@
-// import jwt from 'jsonwebtoken'
-// import User from '../model/user.js';
 
-// const auth = async (request, response, next) => {
-//         try {
-//             // const token = request.cookies.token;
-//             const token = request.headers.authorization?.split(' ')[1];
-//             console.log(`AuthJS file Token:${token}`)
-//             if (!token) {
-//                 return response.status(401).json({ message: 'Unauthorized' });
-//             }
-
-//             try {
-//                 const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-//                 request.user = await User.findById(decodedToken.id).select('-password'); 
-//                 next();
-//             } catch (error) {
-//                 return response.status(401).json({ message: 'Invalid token' });
-//             }
-//         } catch (error) {
-//             response.status(500).json({ message: error.message });
-//         }
-//     }
-
-
-// // export the auth object
-// export default auth;
-
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'
 import User from '../model/user.js';
 
-const auth = async (req, res, next) => {
-    try {
-        const authHeader = req.headers.authorization.split(' ')[1];;
-
-        console.log(`AuthJS file Token:${authHeader}`)
-
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ message: 'Unauthorized: Missing or invalid token' });
-        }
-
-        const token = authHeader.split(' ')[1];
-
-        if (!token) {
-            return res.status(401).json({ message: 'Unauthorized: Missing token' });
-        }
-
+const auth = {
+    // middleware to check if the user is authenticated has a valid token
+    checkAuth: (request, response, next) => {
         try {
-            const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-            const user = await User.findById(decodedToken.id).select('-password');
+            // get the token from the request cookies
+            const token = request.cookies.token;
 
-            if (!user) {
-                return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+            // if the token is not present, return an error
+            if (!token) {
+                return response.status(401).json({ message: 'Unauthorized' });
             }
 
-            req.user = user; // Attach user object to request
+            // verify the token
+            try {
+                const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+                // set the userId in the request object
+                request.userId = decodedToken.id;
+
+                // call the next middleware
+                next();
+            } catch(error) {
+                return response.status(401).json({ message: 'Invalid token' });
+            }
+        } catch (error) {
+            response.status(500).json({ message: error.message });
+        }
+    },
+    // middleware to check if the user is an admin
+    isAdmin: async (request, response, next) => {
+        try {
+            // Get the user id from the request object
+            const userId = request.userId;
+
+            // Find the user by id in the database
+            const user = await User.findById(userId);
+
+            // If the user is not an admin, return an error
+            if(user.role !== 'admin') {
+                return response.status(403).json({ message: 'Forbidden' });
+            }
+
+            // if the user is an admin, call the next middleware
             next();
         } catch (error) {
-            return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+            response.status(500).json({ message: error.message });
         }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
     }
-};
+}
 
+// export the auth object
 export default auth;
