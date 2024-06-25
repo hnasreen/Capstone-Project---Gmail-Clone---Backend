@@ -85,7 +85,7 @@ const userController = {
                 from: 'hnasreen1993@gmail.com',
                 to: email,
                 subject: 'Reset Password Link',
-                text: `https://capstoneprojectgmailclonefrontend.netlify.app//reset-password/${user._id}/${token}`
+                text: `https://capstoneprojectgmailclonefrontend.netlify.app/reset-password/${user._id}/${token}`
             };
 
             transporter.sendMail(mailOptions, function (error, info) {
