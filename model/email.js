@@ -16,10 +16,10 @@ const EmailSchema = new mongoose.Schema({
         required:true
     },
     image:String,
-    name:{
-        type: String,
-        required:true
-    },
+    // name:{
+    //     type: String,
+    //     required:true
+    // },
     starred:{
         type: Boolean,
         required:true,
