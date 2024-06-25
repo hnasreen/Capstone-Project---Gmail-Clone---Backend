@@ -85,7 +85,7 @@ const userController = {
                 from: 'hnasreen1993@gmail.com',
                 to: email,
                 subject: 'Reset Password Link',
-                text: `https://capstone-project-gmail-clone-backend.onrender.com/reset-password/${user._id}`
+                text: `https://capstone-project-gmail-clone-backend.onrender.com/reset-password/${user._id}/${token}`
             };
 
             transporter.sendMail(mailOptions, function (error, info) {
