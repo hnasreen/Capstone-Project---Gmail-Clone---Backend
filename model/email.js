@@ -16,10 +16,10 @@ const EmailSchema = new mongoose.Schema({
         required:true
     },
     image:String,
-    // name:{
-    //     type: String,
-    //     required:true
-    // },
+    name:{
+        type: String,
+        required:true
+    },
     starred:{
         type: Boolean,
         required:true,
@@ -38,11 +38,11 @@ const EmailSchema = new mongoose.Schema({
         type: Boolean, 
         default: false
     } ,
-    // user: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'users',
-    //     required: true
-    // }
+    userID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users',
+        required: true
+    }
 })
 
 const email = mongoose.model('emails',EmailSchema)

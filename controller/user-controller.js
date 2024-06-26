@@ -52,7 +52,7 @@ const userController = {
                 maxAge:  24 * 60 * 60 * 1000 // 24 hours from now
             };
             console.log(`userresetTokenLogin ${user.resetToken}`)
-            response.status(200).cookie('jwt', token, cookieOptions).json({ message: 'User login successful.' });
+            response.status(200).cookie('jwt', token, cookieOptions).json({ message: 'User login successful.'});
         } catch (error) {
             response.status(500).json({ message: error.message });
         }
@@ -85,7 +85,7 @@ const userController = {
                 from: 'hnasreen1993@gmail.com',
                 to: email,
                 subject: 'Reset Password Link',
-                text: `https://capstoneprojectgmailclonefrontend.netlify.app/reset-password/${user._id}/${token}`
+                text: `http://localhost:3000/reset-password/${user._id}/${token}`
             };
 
             transporter.sendMail(mailOptions, function (error, info) {

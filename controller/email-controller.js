@@ -1,9 +1,11 @@
 import Email from "../model/email.js"
-
+import mongoose from "mongoose"
 
 export const saveSentEmails=(request, response)=>{
     try{
-       const email =  new Email(request.body)
+        let user = {...request.body,userID:new mongoose.Types.ObjectId(request.body.userID)}
+        console.log(user)
+       const email =  new Email(user)
        email.save()
        response.status(200).json('email saved successfully');
     }catch(error){
@@ -14,17 +16,17 @@ export const saveSentEmails=(request, response)=>{
 export const getEmails = async(request,response)=>{
     try{
         let emails;
-
+        let userID=new mongoose.Types.ObjectId(request.query.userID)
         if(request.params.type === 'bin'){
-            emails = await Email.find({bin:true})
+            emails = await Email.find({bin:true,userID})
         }else if(request.params.type === 'allmail'){
-            emails = await Email.find({})
+            emails = await Email.find({userID})
         }else if (request.params.type === 'starred'){
-            emails = await Email.find({starred:true,bin:false})
+            emails = await Email.find({starred:true,bin:false,userID})
         }else if (request.params.type === 'sent'){
-            emails = await Email.find({ type: 'sent' });
+            emails = await Email.find({ type: 'sent',userID });
         }else if(request.params.type === 'inbox'){
-            emails = await Email.find({ type: 'sent' }); //Changed the type to sent to show the sent emails in the inbox.
+            emails = await Email.find({ type: 'sent' ,userID}); //Changed the type to sent to show the sent emails in the inbox.
             await markEmailsAsRead(emails);
         }
         else{  
