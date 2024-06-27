@@ -26,4 +26,6 @@ routes.post('/starred',auth,toggleStarredEmails)
 
 routes.delete('/delete',auth,deleteEmails)
 
+// routes.post('/logout',auth,userController.logOut)
+
 export default routes;

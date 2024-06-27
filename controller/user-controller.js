@@ -43,14 +43,15 @@ const userController = {
                 return response.status(400).json({ message: 'Invalid password' });
             }
 
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+            const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET, { expiresIn: '24h' });
             // user.resetToken = token;
             await user.save();
 
             const cookieOptions = {
                 httpOnly: true,
-                sameSite: true,
-                maxAge:  24 * 60 * 60 * 1000 // 24 hours from now
+                // sameSite: true,
+                maxAge:  24 * 60 * 60 * 1000, // 24 hours from now
+                // domain:"localhost"
             };
             // console.log(`userresetTokenLogin ${user.resetToken}`)
             response.status(200).cookie('jwt', token, cookieOptions).json({ message: 'User login successful.',userId: user._id} );
@@ -61,7 +62,7 @@ const userController = {
 
     forgotpassword: async (req, res) => {
         try {
-            const token = request.cookies.token;
+            const token = req.cookies.jwt;
             const { email } = req.body;
             const user = await User.findOne({ email });
             console.log(`Token in forgotpassword: ${token}`)
@@ -69,12 +70,7 @@ const userController = {
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
-
-            // const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-            // user.resetToken = token;
             await user.save();
-
-            // console.log(`userresetTokenForgotPassword ${user.resetToken}`)
 
             var transporter = nodemailer.createTransport({
                 service: 'gmail',
@@ -88,7 +84,7 @@ const userController = {
                 from: 'hnasreen1993@gmail.com',
                 to: email,
                 subject: 'Reset Password Link',
-                text: `https://capstoneprojectgmailclonefrontend.netlify.app/${user._id}/${token}`
+                text: `http://localhost:3000/reset-password/${user._id}/${token}`
             };
 
             transporter.sendMail(mailOptions, function (error, info) {
@@ -107,7 +103,7 @@ const userController = {
     updatepassword: async (req, res) => {
 
         // const token = req.headers.authorization.split(' ')[1];
-        const token = request.cookies.token;
+        const token = req.cookies.jwt;
         const { password } = req.body;
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -118,7 +114,25 @@ const userController = {
         } catch (error) {
             res.status(500).json({ message: 'Error updating password' });
             console.log(error)
-        }}
+        }},
+
+    // logOut: async (request,response)=>{
+
+    //     try {
+    //         // Clear the JWT cookie by setting an expired cookie
+    //         response.cookie('jwt', '', {
+    //             httpOnly: true,
+    //             expires: new Date(0), // Set expiration date to a past date
+    //             // sameSite: true, // Adjust as per your requirements
+    //             // domain: 'localhost', // Optionally specify domain
+    //         });
+    
+    //         response.status(200).json({ message: 'Logged out successfully' });
+    //     } catch (error) {
+    //         response.status(500).json({ message: error.message });
+    //     }
+
+    // }
        
     
 };
