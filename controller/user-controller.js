@@ -30,7 +30,8 @@ const userController = {
     login: async (request, response) => {
         try {
             const { email, password } = request.body;
-            const user = await User.findOne({ email });
+            const user= await User.findOne({ email });
+            console.log(user._id)
 
             if (!user) {
                 return response.status(400).json({ message: 'User not found' });
@@ -52,7 +53,7 @@ const userController = {
                 maxAge:  24 * 60 * 60 * 1000 // 24 hours from now
             };
             console.log(`userresetTokenLogin ${user.resetToken}`)
-            response.status(200).cookie('jwt', token, cookieOptions).json({ message: 'User login successful.'});
+            response.status(200).cookie('jwt', token, cookieOptions).json({ message: 'User login successful.',userID: user._id} );
         } catch (error) {
             response.status(500).json({ message: error.message });
         }

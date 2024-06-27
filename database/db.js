@@ -6,8 +6,8 @@ dotenv.config()
 const Connection = () => {
     try{
 
-        const MONGODB_URI = `mongodb+srv://hnasreen1993:${process.env.DB_PASSWORD}@mongodb1.mqllmd1.mongodb.net/`
-        mongoose.connect(MONGODB_URI,{useNewUrlParser:true})
+        const MONGODB_URI = `mongodb+srv://hnasreen1993:${process.env.DB_PASSWORD}@mongodb1.mqllmd1.mongodb.net/gmailclone?`
+        mongoose.connect(MONGODB_URI)
 
         console.log('database connected successfully')
     }catch(error){
