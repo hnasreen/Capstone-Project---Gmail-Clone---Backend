@@ -49,7 +49,7 @@ const userController = {
 
             const cookieOptions = {
                 httpOnly: true,
-                // sameSite: 'none',
+                sameSite: true,
                 maxAge:  24 * 60 * 60 * 1000 // 24 hours from now
             };
             // console.log(`userresetTokenLogin ${user.resetToken}`)
