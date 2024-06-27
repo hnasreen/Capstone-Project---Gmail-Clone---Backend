@@ -53,7 +53,7 @@ const userController = {
                 maxAge:  24 * 60 * 60 * 1000 // 24 hours from now
             };
             console.log(`userresetTokenLogin ${user.resetToken}`)
-            response.status(200).cookie('jwt', token, cookieOptions).json({ message: 'User login successful.',userID: user._id} );
+            response.status(200).cookie('jwt', token, cookieOptions).json({ message: 'User login successful.',userId: user._id} );
         } catch (error) {
             response.status(500).json({ message: error.message });
         }
