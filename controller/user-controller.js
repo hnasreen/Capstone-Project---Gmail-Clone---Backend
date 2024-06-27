@@ -44,15 +44,15 @@ const userController = {
             }
 
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
-            user.resetToken = token;
+            // user.resetToken = token;
             await user.save();
 
             const cookieOptions = {
                 httpOnly: true,
-                sameSite: 'none',
+                // sameSite: 'none',
                 maxAge:  24 * 60 * 60 * 1000 // 24 hours from now
             };
-            console.log(`userresetTokenLogin ${user.resetToken}`)
+            // console.log(`userresetTokenLogin ${user.resetToken}`)
             response.status(200).cookie('jwt', token, cookieOptions).json({ message: 'User login successful.',userId: user._id} );
         } catch (error) {
             response.status(500).json({ message: error.message });
@@ -61,18 +61,20 @@ const userController = {
 
     forgotpassword: async (req, res) => {
         try {
+            const token = request.cookies.token;
             const { email } = req.body;
             const user = await User.findOne({ email });
+            console.log(`Token in forgotpassword: ${token}`)
 
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-            user.resetToken = token;
+            // const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+            // user.resetToken = token;
             await user.save();
 
-            console.log(`userresetTokenForgotPassword ${user.resetToken}`)
+            // console.log(`userresetTokenForgotPassword ${user.resetToken}`)
 
             var transporter = nodemailer.createTransport({
                 service: 'gmail',
@@ -104,7 +106,8 @@ const userController = {
 
     updatepassword: async (req, res) => {
 
-        const token = req.headers.authorization.split(' ')[1];
+        // const token = req.headers.authorization.split(' ')[1];
+        const token = request.cookies.token;
         const { password } = req.body;
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
