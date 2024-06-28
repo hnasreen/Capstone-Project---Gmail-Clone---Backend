@@ -4,7 +4,7 @@ import mongoose from "mongoose"
 export const saveSentEmails=(request, response)=>{
     try{
         let user = {...request.body,userID:new mongoose.Types.ObjectId(request.body.userID)}
-        let userID=new mongoose.Types.ObjectId(request.query.userID)
+        // let userID=new mongoose.Types.ObjectId(request.query.userID)
         console.log(user)
        const email =  new Email(user)
        email.save()

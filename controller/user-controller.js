@@ -62,9 +62,11 @@ const userController = {
 
     forgotpassword: async (req, res) => {
         try {
-            const token = req.cookies.jwt;
+            // const token = req.cookies.jwt;
+            
             const { email } = req.body;
             const user = await User.findOne({ email });
+            const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET, { expiresIn: '24h' });
             console.log(`Token in forgotpassword: ${token}`)
 
             if (!user) {
@@ -84,7 +86,7 @@ const userController = {
                 from: 'hnasreen1993@gmail.com',
                 to: email,
                 subject: 'Reset Password Link',
-                text: `http://localhost:3000/reset-password/${user._id}/${token}`
+                text: `https://capstoneprojectgmailclonefrontend.netlify.app/reset-password/${user._id}/${token}`
             };
 
             transporter.sendMail(mailOptions, function (error, info) {
@@ -102,8 +104,8 @@ const userController = {
 
     updatepassword: async (req, res) => {
 
-        // const token = req.headers.authorization.split(' ')[1];
-        const token = req.cookies.jwt;
+        const token = req.headers.authorization.split(' ')[1];
+        // const token = req.cookies.jwt;
         const { password } = req.body;
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -116,23 +118,23 @@ const userController = {
             console.log(error)
         }},
 
-    // logOut: async (request,response)=>{
+    logOut: async (request,response)=>{
 
-    //     try {
-    //         // Clear the JWT cookie by setting an expired cookie
-    //         response.cookie('jwt', '', {
-    //             httpOnly: true,
-    //             expires: new Date(0), // Set expiration date to a past date
-    //             // sameSite: true, // Adjust as per your requirements
-    //             // domain: 'localhost', // Optionally specify domain
-    //         });
+        try {
+            // Clear the JWT cookie by setting an expired cookie
+            response.cookie('jwt', '', {
+                httpOnly: true,
+                expires: new Date(0), // Set expiration date to a past date
+                // sameSite: true, // Adjust as per your requirements
+                // domain: 'localhost', // Optionally specify domain
+            });
     
-    //         response.status(200).json({ message: 'Logged out successfully' });
-    //     } catch (error) {
-    //         response.status(500).json({ message: error.message });
-    //     }
+            response.status(200).json({ message: 'Logged out successfully' });
+        } catch (error) {
+            response.status(500).json({ message: error.message });
+        }
 
-    // }
+    }
        
     
 };
