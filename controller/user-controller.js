@@ -67,6 +67,7 @@ const userController = {
             
             const { email } = req.body;
             const user = await User.findOne({ email });
+            console.log(user._id)
             const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET, { expiresIn: '24h' });
             console.log(`Token in forgotpassword: ${token}`)
 
