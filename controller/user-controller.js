@@ -49,7 +49,8 @@ const userController = {
 
             const cookieOptions = {
                 httpOnly: true,
-                // sameSite: true,
+                sameSite: "none",
+                secure:true,
                 maxAge:  24 * 60 * 60 * 1000, // 24 hours from now
                 // domain:"localhost"
             };
